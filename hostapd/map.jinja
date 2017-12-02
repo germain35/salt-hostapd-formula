@@ -1,0 +1,29 @@
+# -*- coding: utf-8 -*-
+# vim: ft=jinja:ts=2:sw=2
+
+{## Start with  defaults from defaults.sls ##}
+{% import_yaml "hostapd/defaults.yaml" as default_settings %}
+
+{% set map = salt['grains.filter_by']({
+  'Debian': {
+      'pkgs': ['hostapd', 'iw', 'wireless-tools'],
+      'realtek_pkgs': ['firmware-realtek'],
+      'atheros_pkgs': ['firmware-atheros'],
+      'service': 'hostapd',
+      'conf_file': '/etc/hostapd/hostapd.conf',
+      'user': 'root',
+      'group': 'root',
+      'mode': '600',
+      'defaults_file': '/etc/default/hostapd',
+  },
+}, grain='os_family', merge=salt['pillar.get']('hostapd:lookup')) %}
+
+{## Merge the flavor_map to the default settings ##}
+{% do default_settings.hostapd.update(map) %}
+
+{## Merge in pillar ##}
+{% set hostapd = salt['pillar.get'](
+  'hostapd',
+  default=default_settings.hostapd,
+  merge=True)
+%}

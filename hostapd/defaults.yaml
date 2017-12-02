@@ -1,0 +1,14 @@
+hostapd:
+  atheros_firmware: False
+  realtek_firmware: False
+  ieee80211n: 1
+  hw_mode: g
+  channel: 10
+  ieee80211d: 1
+  country_code: FR
+  ieee80211n: 1
+  wmm_enabled: 1
+  auth_algs: 0
+  wpa: 2
+  wpa_key_mgmt: WPA-PSK
+  rsn_pairwise: CCMP
