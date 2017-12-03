@@ -2,6 +2,6 @@
 
 include:
   - hostapd.install
-  - hostpad.config
+  - hostapd.config
   - hostapd.service
 
