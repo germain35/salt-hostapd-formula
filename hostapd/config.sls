@@ -11,7 +11,7 @@ include:
 hostapd_activate:
   file.replace:
     - name: {{ hostapd.defaults_file }}
-    - pattern: "^DAEMON_CONF=.*$"
+    - pattern: "^[#]{0,}DAEMON_CONF=.*$"
     - repl: "DAEMON_CONF='{% for interface in hostapd.get('interfaces', {}).keys() %}{{ interface2conf(interface, hostapd) }} {% endfor %}'"
 {%- endif %}      
 
@@ -24,6 +24,7 @@ hostapd_config:
     - user: {{ hostapd.user }}
     - group: {{ hostapd.group }}
     - mode: {{ hostapd.mode }}  
+    - makedirs: True
     - context:
       interface: {{interface}}
     - watch_in:
