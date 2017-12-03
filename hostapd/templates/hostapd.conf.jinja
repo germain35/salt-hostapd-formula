@@ -35,6 +35,7 @@ wpa={{ ap_params.get('wpa', hostapd.wpa) }}
 wpa_key_mgmt={{ ap_params.get('wpa_key_mgmt', hostapd.wpa_key_mgmt) }}
 rsn_pairwise={{ ap_params.get('rsn_pairwise', hostapd.rsn_pairwise) }}
 ap_isolate={{ ap_params.get('ap_isolate', hostapd.ap_isolate) }}
+ap_max_inactivity={{ ap_params.get('ap_max_inactivity', hostapd.ap_max_inactivity) }}
 ignore_broadcast_ssid={{ ap_params.get('ignore_broadcast_ssid', hostapd.ignore_broadcast_ssid) }}
 wpa_passphrase={{ ap_params.get('wpa_passphrase', '') }}
 {%- endfor %}
