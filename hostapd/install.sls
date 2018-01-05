@@ -14,7 +14,7 @@ hostapd_atheros_pkgs:
 {%- endif %}
 
 {%- if hostapd.realtek_firmware %}
-hostapd_atheros_pkgs:
+hostapd_realtek_pkgs:
   pkg.installed:
     - pkgs: {{hostapd.realtek_pkgs}}
     - require_in:
