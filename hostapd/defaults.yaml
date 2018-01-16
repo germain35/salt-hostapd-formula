@@ -1,15 +1,3 @@
 hostapd:
   atheros_firmware: False
   realtek_firmware: False
-  ieee80211n: 1
-  hw_mode: g
-  channel: 10
-  ieee80211n: 1
-  wmm_enabled: 1
-  auth_algs: 0
-  wpa: 2
-  wpa_key_mgmt: WPA-PSK
-  rsn_pairwise: CCMP
-  ignore_broadcast_ssid: 0
-  ap_isolate: 0
-  ap_max_inactivity: 300

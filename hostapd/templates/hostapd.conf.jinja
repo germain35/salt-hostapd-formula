@@ -1,41 +1,27 @@
-{%- from "hostapd/map.jinja" import hostapd with context %}
-{%- set interface_params = hostapd.interfaces.get('{}'.format(interface)) %}
+{%- from "hostapd/map.jinja" import hostapd with context -%}
+{%- set interface_params = hostapd.interfaces.get('{}'.format(interface)) -%}
+
+# global
+#########################################
 interface={{ interface }}
-{%- if interface_params.driver is defined %}
-driver={{ interface_params.driver }}
-{%- endif %}
-{%- if interface_params.bridge is defined %}
-bridge={{ interface_params.bridge }}
-{%- endif %}
-hw_mode={{ interface_params.get('hw_mode', hostapd.hw_mode) }}
-channel={{ interface_params.get('channel', hostapd.channel) }}
-ieee80211n={{ interface_params.get('ieee80211n', hostapd.ieee80211n) }}
-wmm_enabled={{ interface_params.get('wmm_enabled', hostapd.wmm_enabled) }}
-{%- if interface_params.ieee80211d is defined %}
-ieee80211d={{ interface_params.get('ieee80211d') }}
-{%- endif %}
-{%- if interface_params.country_code is defined %}
-country_code={{ interface_params.get('country_code') }}
-{%- endif %}
+{%- for k, v in interface_params|dictsort %}
+  {%- if k != 'access_points' %}
+{{k}}={{v}}
+  {%- endif %}
+{%- endfor %}
+
+# access points
+#########################################
 {#- don't break compatibility with old config format #}
 {%- set ap_list_orig = interface_params.get('access_points', {}) %}
-{%- set ap_list = ap_list_orig.iteritems() if ap_list_orig is mapping else ap_list_orig %}
+{%- set ap_list = ap_list_orig|dictsort if ap_list_orig is mapping else ap_list_orig %}
 {%- for ap in ap_list %}
   {%- set ap_name = ap['ssid'] if ap is mapping else ap[0] %}
-  {%- set ap_params = ap if ap is mapping else ap[1] %}
-  {%- if ap_params.bss is defined %}
-bss={{ ap_params.bss }}
-  {%- endif %}
-  {%- if ap_params.bridge is defined %}
-bridge={{ ap_params.bridge }}
-  {%- endif %}
 ssid={{ ap_name }}
-auth_algs={{ ap_params.get('auth_algs', hostapd.auth_algs) }}
-wpa={{ ap_params.get('wpa', hostapd.wpa) }}
-wpa_key_mgmt={{ ap_params.get('wpa_key_mgmt', hostapd.wpa_key_mgmt) }}
-rsn_pairwise={{ ap_params.get('rsn_pairwise', hostapd.rsn_pairwise) }}
-ap_isolate={{ ap_params.get('ap_isolate', hostapd.ap_isolate) }}
-ap_max_inactivity={{ ap_params.get('ap_max_inactivity', hostapd.ap_max_inactivity) }}
-ignore_broadcast_ssid={{ ap_params.get('ignore_broadcast_ssid', hostapd.ignore_broadcast_ssid) }}
-wpa_passphrase={{ ap_params.get('wpa_passphrase', '') }}
+  {%- set ap_params = ap if ap is mapping else ap[1] %}
+  {%- for k, v in ap_params|dictsort %}
+    {%- if k != 'ssid' %}
+{{k}}={{v}}
+    {%- endif %}
+  {%- endfor %}
 {%- endfor %}
