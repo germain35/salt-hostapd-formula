@@ -3,4 +3,5 @@
 hostapd_service:
   service.running:
     - name: {{hostapd.service}}
-    - enable: True
+    - enable: {{hostapd.service_enabled}}
+    - reload: {{hostapd.service_reload}}
