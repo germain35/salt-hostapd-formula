@@ -7,13 +7,13 @@ include:
   {{ hostapd.conf_dir }}/{{ hostapd.conf_file|replace('.conf', "_{}.conf".format(interface)) }}
 {%- endmacro %}
 
-{%- if hostapd.defaults_file is defined %}
 hostapd_activate:
   file.replace:
     - name: {{ hostapd.defaults_file }}
     - pattern: "^[#]{0,}DAEMON_CONF=.*$"
     - repl: "DAEMON_CONF='{% for interface in hostapd.get('interfaces', {}).keys() %}{{ interface2conf(interface, hostapd) }} {% endfor %}'"
-{%- endif %}      
+    - watch_in:
+      - service: hostapd_service
 
 {%- for interface in hostapd.get('interfaces', {}).keys() %}
 hostapd_config:
@@ -26,7 +26,9 @@ hostapd_config:
     - mode: {{ hostapd.mode }}  
     - makedirs: True
     - context:
-      interface: {{interface}}
+        interface: {{interface}}
     - watch_in:
       - service: hostapd_service
+    - require:
+      -  file: hostapd_activate
 {%- endfor %}
