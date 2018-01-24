@@ -1,5 +1,6 @@
 hostapd:
   atheros_firmware: False
   realtek_firmware: False
+  service_running: True
   service_reload: False
   service_enabled: True

@@ -3,6 +3,8 @@
 include:
   - hostapd.install
 
+{%- if hostapd.service_running %}
+
 hostapd_service:
   service.running:
     - name: {{hostapd.service}}
@@ -10,3 +12,14 @@ hostapd_service:
     - reload: {{hostapd.service_reload}}
     - require:
       - pkg: hostapd_pkgs
+
+{%- else %}
+
+hostapd_service:
+  service.dead:
+    - name: {{hostapd.service}}
+    - enable: {{hostapd.service_enabled}}
+    - require:
+      - pkg: hostapd_pkgs
+
+{%- endif %}
