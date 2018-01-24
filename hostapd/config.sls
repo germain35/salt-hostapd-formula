@@ -3,9 +3,11 @@
 include:
   - hostapd.service
 
-{%- macro interface2conf(interface, hostpad) -%}
-  {{ hostapd.conf_dir }}/{{ hostapd.conf_file|replace('.conf', "_{}.conf".format(interface)) }}
-{%- endmacro %}
+{%- if hostapd.get('interfaces', {}).keys()|length > 1 %}
+
+  {%- macro interface2conf(interface, hostpad) -%}
+    {{ hostapd.conf_dir }}/{{ hostapd.conf_file|replace('.conf', "_{}.conf".format(interface)) }}
+  {%- endmacro %}
 
 hostapd_activate:
   file.replace:
@@ -15,8 +17,8 @@ hostapd_activate:
     - watch_in:
       - service: hostapd_service
 
-{%- for interface in hostapd.get('interfaces', {}).keys() %}
-hostapd_config:
+  {%- for interface in hostapd.get('interfaces', {}).keys() %}
+hostapd_config_{{interface}}:
   file.managed:
     - name: {{ interface2conf(interface, hostapd) }}
     - source: salt://hostapd/templates/hostapd.conf.jinja
@@ -31,4 +33,34 @@ hostapd_config:
       - service: hostapd_service
     - require:
       -  file: hostapd_activate
-{%- endfor %}
+  {%- endfor %}
+
+{%- else %}
+
+hostapd_activate:
+  file.replace:
+    - name: {{ hostapd.defaults_file }}
+    - pattern: "^[#]{0,}DAEMON_CONF=.*$"
+    - repl: "DAEMON_CONF='{{ hostapd.conf_dir|path_join(hostapd.conf_file) }}'"
+    - watch_in:
+      - service: hostapd_service
+
+  {%- for interface in hostapd.get('interfaces', {}).keys() %}
+hostapd_config_{{interface}}:
+  file.managed:
+    - name: {{ hostapd.conf_dir|path_join(hostapd.conf_file) }}
+    - source: salt://hostapd/templates/hostapd.conf.jinja
+    - template: jinja   
+    - user: {{ hostapd.user }}
+    - group: {{ hostapd.group }}
+    - mode: {{ hostapd.mode }}  
+    - makedirs: True
+    - context:
+        interface: {{interface}}
+    - watch_in:
+      - service: hostapd_service
+    - require:
+      -  file: hostapd_activate
+  {%- endfor %}
+
+{%- endif %}
