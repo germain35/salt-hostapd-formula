@@ -3,6 +3,15 @@
 include:
   - hostapd.install
 
+hostapd_initd_file:
+  file.managed:
+    - name: {{hostapd.initd_file}}
+    - source: salt://hostapd/files/hostapd.initd
+    - template: jinja
+    - mode: 755
+    - watch_in:
+      - service: hostapd_service
+
 {%- if hostapd.service_running %}
 
 hostapd_service:
