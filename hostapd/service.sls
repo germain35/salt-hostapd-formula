@@ -3,6 +3,7 @@
 include:
   - hostapd.install
 
+{%- if salt['grains.get']('os_family') == 'Debian' %}
 hostapd_initd_file:
   file.managed:
     - name: {{hostapd.initd_file}}
@@ -11,6 +12,7 @@ hostapd_initd_file:
     - mode: 755
     - watch_in:
       - service: hostapd_service
+{%- endif %}
 
 {%- if hostapd.service_running %}
 
